@@ -180,10 +180,13 @@ app.post('/message', function(request, response) {
 
   try {
     let data = JSON.parse(JSON.stringify(request.body))
-      // The From: address needs to be changed to use a verified domain
+      // The From: address needs to be changed to use a verified domain,
+      // and Sender removed (it could be changed as well, but that would make
+      // it redundant).
       // Note that jshint fails here due to a bug (https://github.com/jshint/jshint/pull/2881)
       , message = data[0].msys.relay_message.content.email_rfc822
-        .replace(/^From: .*$/m, 'From: ' + process.env.FORWARD_FROM);
+        .replace(/^From: .*$/m, 'From: ' + process.env.FORWARD_FROM)
+        .replace(/^Sender: .*$/m, '');
 
     publisher.publish('queue', message);
 
